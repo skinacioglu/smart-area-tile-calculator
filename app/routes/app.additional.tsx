@@ -1,6 +1,6 @@
 export default function AdditionalPage() {
   return (
-    <s-page heading="Support & Contact">
+    <s-page heading="Support & Contact-2">
       <s-section heading="Multiple pages">
         <s-paragraph>
           The app template comes with an additional page which demonstrates how
