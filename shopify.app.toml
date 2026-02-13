@@ -2,12 +2,11 @@
 
 client_id = "a271c9eab2477f2d586b87ef3d5b6ad4"
 name = "Smart Area & Tile Calculator"
-application_url = "https://example.com"
+application_url = "https://smart-area-tile-calculator.vercel.app/"
 embedded = true
 
 [build]
 automatically_update_urls_on_dev = true
-include_config_on_deploy = true
 
 [webhooks]
 api_version = "2026-01"
@@ -27,4 +26,6 @@ optional_scopes = [ ]
 use_legacy_install_flow = false
 
 [auth]
-redirect_urls = [ ]
+redirect_urls = [
+  "https://smart-area-tile-calculator.vercel.app/api/auth/callback"
+]
