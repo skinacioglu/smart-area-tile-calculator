@@ -1,37 +1,3 @@
-import { Page, Layout, Card, Text, BlockStack, List, Box } from "@shopify/polaris";
-import { NavMenu } from "@shopify/app-bridge-react";
-
-export default function Index() {
-  return (
-    <Page title="User Guide">
-      <NavMenu>
-        <a href="/app" rel="home">User Guide</a>
-        <a href="/app/additional">Support & Contact</a>
-      </NavMenu>
-      
-      <Layout>
-        <Layout.Section>
-          <Card>
-            <BlockStack gap="400">
-              <Text as="h2" variant="headingMd">Welcome to Tile Calculatorssssssss! 🚀</Text>
-              <Text as="p" variant="bodyMd">
-                This app works directly on your product pages. Setup is simple:
-              </Text>
-              <Box paddingBlockStart="200">
-                <List>
-                  <List.Item>Go to <b>Online Store > Themes > Customize</b>.</List.Item>
-                  <List.Item>Select a <b>Product Page</b>.</List.Item>
-                  <List.Item>Click <b>Add Block</b> and select <b>Tile Calculator</b>.</List.Item>
-                </List>
-              </Box>
-            </BlockStack>
-          </Card>
-        </Layout.Section>
-      </Layout>
-    </Page>
-  );
-}
-
 import { useEffect } from "react";
 import type {
   ActionFunctionArgs,
@@ -140,7 +106,7 @@ export default function Index() {
         Generate a product
       </s-button>
 
-      <s-section heading="Congrats on creating a new Shopify app11111 🎉">
+      <s-section heading="Congrats on creating a new Shopify app 🎉">
         <s-paragraph>
           This embedded app template uses{" "}
           <s-link
