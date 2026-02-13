@@ -1,0 +1,499 @@
+{% comment %} 
+  Smart Area & Tile Calculator
+{% endcomment %}
+
+{%- assign product_type = product.type | downcase -%}
+{%- assign product_title = product.title | downcase -%}
+{%- assign should_render = false -%}
+
+{%- comment -%} 1. Logic: Check if Product Type is in the allowed list {%- endcomment -%}
+{%- assign allowed_types = block.settings.allowed_product_types | split: ',' -%}
+{%- for type in allowed_types -%}
+  {%- assign trimmed_type = type | strip | downcase -%}
+  {%- if product_type == trimmed_type -%}
+    {%- assign should_render = true -%}
+  {%- endif -%}
+{%- endfor -%}
+
+{%- comment -%} 2. Logic: Exclusion Filter (e.g., molding, pencil, liner) {%- endcomment -%}
+{%- assign excluded_terms = block.settings.excluded_terms | split: ',' -%}
+{%- for term in excluded_terms -%}
+  {%- assign trimmed_term = term | strip | downcase -%}
+  {%- if product_title contains trimmed_term or product_type contains trimmed_term -%}
+    {%- assign should_render = false -%}
+  {%- endif -%}
+{%- endfor -%}
+
+{%- if should_render -%}
+  {%- comment -%} Dynamic Metafield Mapping {%- endcomment -%}
+  {%- assign box_mf_parts = block.settings.box_metafield | split: '.' -%}
+  {%- assign cov_mf_parts = block.settings.cov_metafield | split: '.' -%}
+  
+  {%- assign per_box_value = product.metafields[box_mf_parts[0]][box_mf_parts[1]].value | default: 00.00 -%}
+  {%- assign piece_coverage = product.metafields[cov_mf_parts[0]][cov_mf_parts[1]].value -%}
+  
+  <style>
+    /* Global Overrides */
+    quantity-input, 
+    .quantity, 
+    .product-form__input--quantity,
+    .product-form__item--quantity,
+    input[name="quantity"]:not(#st_hidden_qty) {
+      display: none !important;
+      opacity: 0 !important;
+      visibility: hidden !important;
+      position: absolute !important;
+      z-index: -10 !important;
+    }
+
+    .template-cart quantity-input, 
+    .template-cart .quantity,
+    .template-cart input[name="quantity"],
+    .template-cart .cart-item__remove,
+    .cart-drawer quantity-input {
+      display: flex !important;
+      opacity: 1 !important;
+      visibility: visible !important;
+      position: relative !important;
+      z-index: 1 !important;
+      pointer-events: auto !important;
+      height: auto !important;
+      width: auto !important;
+    }
+
+    .st-calc-final-wrap { 
+      width: 100%; max-width: 500px; padding: 0; margin-top: 0 !important;
+      margin-bottom: {{ block.settings.margin_bottom_desktop }}px !important; 
+      color: {{ block.settings.text_color }}; box-sizing: border-box; 
+    }
+    
+    .st-calc-header-flex { display: flex; justify-content: flex-start; align-items: baseline; gap: 12px; margin-bottom: 12px; }
+    .st-calc-main-title { margin: 0; font-size: 18px; font-weight: 500; color: inherit; }
+    .st-area-calc-subtitle { font-size: 14px; color: {{ block.settings.accent_color }}; cursor: pointer; display: flex; align-items: center; gap: 3px; text-decoration: underline; font-weight: 500; white-space: nowrap; }
+    .st-area-inputs-wrap { display: none; padding: 0; margin: 0; }
+    .st-area-inputs-wrap.active { display: block; }
+
+    .st-calc-grid-row { display: flex; flex-wrap: nowrap; align-items: flex-start; justify-content: space-between; width: 100%; position: relative; margin-bottom: 15px; }
+    .st-calc-grid-col { display: flex; flex-direction: column; align-items: center; width: 44% !important; }
+    .st-calc-input-box {
+      width: 100% !important; height: 45px !important; border: 1px solid {{ block.settings.border_color }} !important; 
+      border-radius: 4px; padding: 0 10px !important; font-size: 15px !important; color: #333 !important; 
+      background: #ffffff !important; text-align: center !important; box-sizing: border-box !important; margin: 0 !important;
+    }
+
+    .st-calc-separator { position: absolute; left: 50%; transform: translateX(-50%); width: 12% !important; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #999; z-index: 5; height: 45px; bottom: 0; }
+    .st-unit-toggle-wrapper { display: flex; align-items: center; background: #f2f2f2; border-radius: 4px; padding: 2px; border: 1px solid #eee; cursor: pointer; width: 80px; }
+    .st-unit-btn { flex: 1; padding: 2px 0; font-size: 10px; font-weight: 800; text-align: center; border-radius: 3px; color: #bbb; text-transform: uppercase; }
+    .st-unit-btn.active { background: #fff; color: #333; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+    .st-arrow-down { font-size: 14px; color: #999; line-height: 1; margin-top: 2px; font-weight: 700; }
+    .st-calc-separator .x-mark { display: block; transform: translateY(8px); }
+    .st-calc-label-small { font-size: 13px !important; font-weight: 700 !important; color: inherit !important; text-transform: uppercase; margin-bottom: 6px; text-align: center; }
+
+    .st-calc-info-footer { width: 100% !important; font-size: 14px; color: #666; border-top: 1px solid {{ block.settings.border_color }} !important; padding-top: 8px; display: flex; flex-direction: row; flex-wrap: wrap; justify-content: center; gap: 6px; align-items: center; box-sizing: border-box; }
+    .st-footer-item { display: inline-flex; align-items: center; margin: 0; padding: 0; }
+    .st-footer-item b { font-weight: 700 !important; color: #333; margin-right: 6px; }
+    #st_price_wrap { display: none; width: 100% !important; text-align: center !important; margin-top: -7px !important; padding-top: 8px !important; border-top: 1px dashed {{ block.settings.border_color }} !important; font-weight: 700 !important; }
+
+    @media screen and (max-width: 767px) {
+      .st-calc-final-wrap { margin-bottom: {{ block.settings.margin_bottom_mobile }}px !important; }
+    }
+  </style>
+
+  <div class="st-calc-final-wrap" id="st_calc_wrapper">
+    <div class="st-calc-header-flex">
+      <h4 class="st-calc-main-title">{{ block.settings.main_title }}</h4>
+      <button type="button" class="st-area-calc-subtitle" id="st_toggle_btn" aria-expanded="false" style="background:none; border:none; cursor:pointer; font-family:inherit; padding:0;">
+        <span id="st_icon">+</span> {{ block.settings.area_calc_label }}
+      </button>
+    </div>
+
+    <div id="st_area_inputs" class="st-area-inputs-wrap">
+      <div style="display: flex; justify-content: flex-end; margin-bottom: 10px;">
+        <div class="st-unit-toggle-wrapper" id="st_unit_toggle">
+          <div class="st-unit-btn active" id="st_unit_primary">{{ block.settings.unit_small }}</div>
+          <div class="st-unit-btn" id="st_unit_secondary">{{ block.settings.unit_large }}</div>
+        </div>
+      </div>
+
+      <div class="st-calc-grid-row">
+        <div class="st-calc-grid-col">
+          <label class="st-calc-label-small">{{ block.settings.label_width }} (<span class="st-unit-text">{{ block.settings.unit_small | downcase }}</span>)</label>
+          <input type="number" id="st_area_w" placeholder="0" class="st-calc-input-box">
+        </div>
+        <div class="st-calc-grid-col">
+          <label class="st-calc-label-small">{{ block.settings.label_length }} (<span class="st-unit-text">{{ block.settings.unit_small | downcase }}</span>)</label>
+          <input type="number" id="st_area_l" placeholder="0" class="st-calc-input-box">
+        </div>
+        <div class="st-calc-separator"><span class="x-mark" style="font-size:18px;">×</span><span class="st-arrow-down">↓</span></div>
+        </div>
+    </div>
+    
+    <div class="st-calc-grid-row">
+      <div class="st-calc-grid-col">
+        <label class="st-calc-label-small">{{ block.settings.label_i_need }} ({{ block.settings.area_label }})</label>
+        <input type="number" id="st_input_area_final" placeholder="0" class="st-calc-input-box">
+      </div>
+      <div class="st-calc-separator"><span style="font-size: 13px;">or</span></div>
+      <div class="st-calc-grid-col">
+        <label class="st-calc-label-small">{{ block.settings.label_buy_boxes }}</label>
+        <input type="number" id="st_input_box_final" placeholder="0" class="st-calc-input-box">
+      </div>
+    </div>
+
+    <div class="st-calc-info-footer">
+      <div style="display: flex; gap: 10px; margin-bottom: 8px; justify-content: center; flex-wrap: wrap; align-items: center;">
+        <div class="st-footer-item"><b>{{ block.settings.label_box_info }}</b> <span id="st_box_value">{{ per_box_value }}</span>&nbsp;{{ block.settings.area_label }}</div>
+        {% if piece_coverage %}
+          <span id="sep_after_box" style="color: #999; margin: 0 0px;">|</span>
+          <div class="st-footer-item"><b>{{ block.settings.label_piece_info }}</b> <span id="st_piece_value">{{ piece_coverage }}</span>&nbsp;{{ block.settings.area_label }}</div>
+        {% else %}
+          <span id="sep_after_box" style="display: none; color: #999; margin: 0 0px;">|</span>
+        {% endif %}
+        <span id="st_calculated_separator" style="color: #999; margin: 0 0px; display: none;">|</span>
+          <div id="st_calculated_area" class="st-footer-item" style="display: none;"><span id="st_calculated_value">0.00</span>&nbsp;<span id="st_calculated_unit">{{ block.settings.area_label }}</span></div>
+      </div>
+      <div id="st_price_wrap">
+          {{ block.settings.label_subtotal }}: <span id="st_live_price" style="margin-left: 4px; font-weight: 700;">{{ cart.currency.symbol }}0.00</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      function initST() {
+        const wrap = document.getElementById('st_calc_wrapper');
+        if(!wrap) return;
+
+        const areaIn = wrap.querySelector('#st_input_area_final');
+        const boxIn = wrap.querySelector('#st_input_box_final');
+        const areaW = wrap.querySelector('#st_area_w');
+        const areaL = wrap.querySelector('#st_area_l');
+        const unitToggle = wrap.querySelector('#st_unit_toggle');
+        
+        // Read and normalize box coverage (max two decimals)
+        const boxSpan = wrap.querySelector('#st_box_value');
+        let perBox = {{ per_box_value | default: 0 }};
+        if (boxSpan) {
+          const raw = parseFloat((boxSpan.innerText || '').replace(/[^0-9.\-]/g, '')) || perBox || 0;
+          perBox = Math.floor(raw * 100) / 100;
+          boxSpan.innerText = perBox.toFixed(2);
+        } else {
+          perBox = Math.floor((perBox || 0) * 100) / 100;
+        }
+        const pricePerBox = {{ product.price | divided_by: 100.0 }};
+        const numberFormat = "{{ block.settings.number_format }}";
+
+        function formatCurrencyAmount(amount) {
+          const locale = numberFormat === 'eu' ? 'de-DE' : 'en-US';
+          return new Intl.NumberFormat(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(amount);
+        }
+
+        // Read and normalize piece coverage (max two decimals) if present
+        const pieceSpan = wrap.querySelector('#st_piece_value');
+        if (pieceSpan) {
+          const rawPiece = parseFloat((pieceSpan.innerText || '').replace(/[^0-9.\-]/g, '')) || 0;
+          const pieceVal = Math.floor(rawPiece * 100) / 100;
+          pieceSpan.innerText = pieceVal.toFixed(2);
+        }
+        const livePriceSpan = wrap.querySelector('#st_live_price');
+        if (livePriceSpan) livePriceSpan.innerText = "{{ cart.currency.symbol }}" + formatCurrencyAmount(0);
+        const system = "{{ block.settings.measurement_system }}";
+        const metricType = "{{ block.settings.metric_precision }}";
+        
+        let currentUnit = 'primary'; 
+
+        function updateUI(boxes) {
+          if (boxes > 0) {
+            // 1. Update Estimated Price
+            const livePriceWrap = wrap.querySelector('#st_live_price');
+            if (livePriceWrap) {
+              livePriceWrap.innerText = "{{ cart.currency.symbol }}" + formatCurrencyAmount(boxes * pricePerBox);
+            }
+            wrap.querySelector('#st_price_wrap').style.display = "block";
+            
+            // 2. Sync with Theme Quantity Inputs (Fallback if CSS hide fails)
+            const themeInputs = document.querySelectorAll('input[name="quantity"], input[id*="Quantity"], quantity-input input');
+            
+            themeInputs.forEach(input => {
+              if (input.id !== 'st_hidden_qty') {
+                 input.value = boxes;
+                 
+                 // Trigger events so theme scripts (Dawn, etc.) recognize the change
+                 ['input', 'change', 'blur'].forEach(eventType => {
+                   input.dispatchEvent(new Event(eventType, { bubbles: true }));
+                 });
+              }
+            });
+          } else {
+            const priceWrap = wrap.querySelector('#st_price_wrap');
+            if (priceWrap) priceWrap.style.display = "none";
+          }
+        }
+
+        function calc() {
+          const w = parseFloat(areaW.value) || 0;
+          const l = parseFloat(areaL.value) || 0;
+          if (w > 0 && l > 0) {
+            let divisor = 144; // Default Imperial (in to ft)
+            if(system === 'metric') {
+               divisor = (metricType === 'mm') ? 1000000 : 10000;
+            }
+            const val = (currentUnit === 'secondary') ? (w * l) : (w * l / divisor);
+            areaIn.value = val.toFixed(2);
+            const boxes = Math.ceil(val / perBox);
+            const adjustedArea = boxes * perBox;
+            boxIn.value = boxes;
+            updateUI(boxes);
+            wrap.querySelector('#st_calculated_area').style.display = 'flex';
+            wrap.querySelector('#st_calculated_value').innerText = adjustedArea.toFixed(2);
+            // show separator before calculated value
+            const sep = wrap.querySelector('#st_calculated_separator');
+            if (sep) sep.style.display = 'inline';
+          } else {
+            wrap.querySelector('#st_calculated_area').style.display = 'none';
+            const sep = wrap.querySelector('#st_calculated_separator');
+            if (sep) sep.style.display = 'none';
+          }
+        }
+
+        wrap.querySelector('#st_toggle_btn').onclick = (e) => {
+          const btn = e.currentTarget;
+          const isExpanded = btn.getAttribute('aria-expanded') === 'true';
+          
+          btn.setAttribute('aria-expanded', !isExpanded);
+          wrap.querySelector('#st_area_inputs').classList.toggle('active');
+          
+          const icon = btn.querySelector('#st_icon');
+          if(icon) icon.innerText = isExpanded ? '+' : '-';
+        };
+
+        unitToggle.onclick = () => {
+          currentUnit = (currentUnit === 'primary') ? 'secondary' : 'primary';
+          wrap.querySelector('#st_unit_primary').classList.toggle('active');
+          wrap.querySelector('#st_unit_secondary').classList.toggle('active');
+          
+          wrap.querySelectorAll('.st-unit-text').forEach(t => {
+            t.innerText = (currentUnit === 'primary' ? "{{ block.settings.unit_small | downcase }}" : "{{ block.settings.unit_large | downcase }}");
+          });
+          calc();
+        };
+
+        [areaW, areaL].forEach(el => el.oninput = calc);
+        areaIn.oninput = () => {
+          const areaValue = parseFloat(areaIn.value) || 0;
+          let b = Math.ceil(areaValue / perBox);
+          const adjustedArea = b * perBox;
+          boxIn.value = b > 0 ? b : "";
+          updateUI(b);
+          if (areaValue > 0) {
+            wrap.querySelector('#st_calculated_area').style.display = 'flex';
+            wrap.querySelector('#st_calculated_value').innerText = adjustedArea.toFixed(2);
+            const sep = wrap.querySelector('#st_calculated_separator');
+            if (sep) sep.style.display = 'inline';
+          } else {
+            wrap.querySelector('#st_calculated_area').style.display = 'none';
+            const sep = wrap.querySelector('#st_calculated_separator');
+            if (sep) sep.style.display = 'none';
+          }
+        };
+        boxIn.oninput = () => {
+          let b = parseInt(boxIn.value) || 0;
+          const areaValue = b > 0 ? (b * perBox) : 0;
+          areaIn.value = areaValue > 0 ? areaValue.toFixed(2) : "";
+          updateUI(b);
+          if (areaValue > 0) {
+            wrap.querySelector('#st_calculated_area').style.display = 'flex';
+            wrap.querySelector('#st_calculated_value').innerText = areaValue.toFixed(2);
+            const sep = wrap.querySelector('#st_calculated_separator');
+            if (sep) sep.style.display = 'inline';
+          } else {
+            wrap.querySelector('#st_calculated_area').style.display = 'none';
+            const sep = wrap.querySelector('#st_calculated_separator');
+            if (sep) sep.style.display = 'none';
+          }
+        };
+      }
+      initST();
+      document.addEventListener('shopify:section:load', initST);
+    })();
+  </script>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Tile Calculator",
+  "target": "section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Product Filters"
+    },
+    {
+      "type": "text",
+      "id": "allowed_product_types",
+      "label": "Show on Product Types",
+      "info": "Comma-separated list (e.g., tile, stone, paver)",
+      "default": "Tile, Porcelain"
+    },
+    {
+      "type": "text",
+      "id": "excluded_terms",
+      "label": "Exclude Terms",
+      "info": "Hide if title/type contains (e.g., molding, pencil, liner)",
+      "default": "molding, pencil, liner"
+    },
+    {
+      "type": "header",
+      "content": "Measurement System"
+    },
+    {
+      "type": "select",
+      "id": "measurement_system",
+      "label": "System",
+      "options": [
+        { "value": "imperial", "label": "Imperial (US: in/ft)" },
+        { "value": "metric", "label": "Metric (EU: cm/m)" }
+      ],
+      "default": "imperial"
+    },
+    {
+      "type": "select",
+      "id": "metric_precision",
+      "label": "Metric Sub-Unit",
+      "info": "Only for Metric. Leave as 'Select' for Imperial.",
+      "options": [
+        { "value": "none", "label": "Select unit..." },
+        { "value": "cm", "label": "Centimeters (cm)" },
+        { "value": "mm", "label": "Millimeters (mm)" }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "header",
+      "content": "Data Source (Metafields)"
+    },
+    {
+      "type": "textarea",
+      "id": "box_metafield",
+      "label": "Box Coverage Metafield",
+      "default": "custom.sqft_per_box",
+      "info": "Manual input only. Enter the metafield path (e.g., custom.sqft_per_box). This value represents the total area covered by one full box."
+    },
+    {
+      "type": "textarea",
+      "id": "cov_metafield",
+      "label": "Piece Coverage Metafield",
+      "default": "custom.coverage",
+      "info": "Manual input only (e.g., custom.coverage). This represents the area covered by a single piece/tile."
+    },
+    {
+      "type": "header",
+      "content": "Translation & Labels (Localization)",
+      "info": "Use these fields to translate the widget into your store's language."
+    },
+    {
+      "type": "text",
+      "id": "main_title",
+      "label": "Widget Heading",
+      "default": "How much do you need?",
+      "info": "Main title of the calculator."
+    },
+    {
+      "type": "text",
+      "id": "area_calc_label",
+      "label": "Area Calculator Link",
+      "default": "Area Calculator",
+      "info": "Text for the toggle button."
+    },
+    {
+      "type": "text",
+      "id": "label_width",
+      "label": "Width Label",
+      "default": "Width",
+      "info": "Translation for 'Width'."
+    },
+    {
+      "type": "text",
+      "id": "label_length",
+      "label": "Length Label",
+      "default": "Length",
+      "info": "Translation for 'Length'."
+    },
+    {
+      "type": "text",
+      "id": "label_i_need",
+      "label": "Requirement Label",
+      "default": "I Need",
+      "info": "Translation for 'I Need'."
+    },
+    {
+      "type": "text",
+      "id": "label_buy_boxes",
+      "label": "Purchase Label",
+      "default": "Buy (boxes)",
+      "info": "Translation for 'Buy (boxes)'."
+    },
+    {
+      "type": "text",
+      "id": "label_box_info",
+      "label": "Box Footer Label",
+      "default": "Box:",
+      "info": "Translation for 'Box:' info in footer."
+    },
+    {
+      "type": "text",
+      "id": "label_piece_info",
+      "label": "Piece Footer Label",
+      "default": "Piece:",
+      "info": "Translation for 'Piece:' info in footer."
+    },
+    {
+      "type": "text",
+      "id": "area_label",
+      "label": "Area Unit Name",
+      "default": "sq. ft.",
+      "info": "Example: sq. ft. or m²."
+    },
+    {
+      "type": "text",
+      "id": "unit_small",
+      "label": "Small Unit (Toggle)",
+      "default": "IN",
+      "info": "Example: IN, CM, MM."
+    },
+    {
+      "type": "text",
+      "id": "unit_large",
+      "label": "Large Unit (Toggle)",
+      "default": "FT",
+      "info": "Example: FT, M."
+    },
+    {
+      "type": "text",
+      "id": "label_subtotal",
+      "label": "Subtotal Label",
+      "default": "Est. Subtotal"
+    },
+    {
+      "type": "header",
+      "content": "Colors & Spacing"
+    },
+    {
+      "type": "select",
+      "id": "number_format",
+      "label": "Number Formatting",
+      "info": "Display format for currency fields",
+      "options": [
+        { "value": "us", "label": "US (1,234.56)" },
+        { "value": "eu", "label": "EU (1.234,56)" }
+      ],
+      "default": "us"
+    },
+    { "type": "color","id": "text_color", "label": "Text", "default": "#333333" },
+    { "type": "color", "id": "accent_color", "label": "Accent", "default": "#666666" },
+    { "type": "color", "id": "border_color", "label": "Borders", "default": "#dddddd" },
+    { "type": "range", "id": "margin_bottom_desktop", "min": -20, "max": 20, "default": -8, "label": "Desktop Margin" },
+    { "type": "range", "id": "margin_bottom_mobile", "min": -20, "max": 20, "default": -12, "label": "Mobile Margin" }
+  ]
+}
+{% endschema %}
