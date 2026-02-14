@@ -36,6 +36,15 @@ export default function AdditionalPage() {
         </s-link>
       </s-section>
 
+      <s-section slot="aside" heading="Need a Helping Hand?">
+        <s-paragraph>
+          Don't worry if you get stuck! Our team at <b>Serkasoft</b> has 24 years of experience building software, and we're here to help you shine.
+        </s-paragraph>
+        <s-link href="/app/additional">
+          <s-button>Get Professional Support</s-button>
+        </s-link>
+      </s-section>
+
       <s-section slot="aside" heading="Quick Links">
         <s-unordered-list>
           <s-list-item>
