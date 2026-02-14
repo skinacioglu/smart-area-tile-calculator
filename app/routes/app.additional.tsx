@@ -57,7 +57,7 @@ export default function AdditionalPage() {
       <s-section slot="aside" heading="Quick Links">
         <s-unordered-list>
           <s-list-item>
-            <s-link href="/app/advanced-setup-guide">Advanced Setup Guide</s-link>
+            <s-link href="/app">Back to Dashboard</s-link>
           </s-list-item>
           <s-list-item>
             <s-link href="https://help.shopify.com" target="_blank">Shopify Help Center</s-link>
