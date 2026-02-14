@@ -16,7 +16,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   const { admin } = await authenticate.admin(request);
-  const color = ["Red", "Orange", "Yellow", "Green"][
+  const color = ["Blue", "Silver", "Gray", "Stone"][
     Math.floor(Math.random() * 4)
   ];
   const response = await admin.graphql(
@@ -51,52 +51,70 @@ export default function Index() {
     }
   }, [fetcher.data?.product?.id, shopify]);
 
+  const generateProduct = () => fetcher.submit({}, { method: "POST" });
+
   return (
-    <s-page heading="User Guide & Configuration">
-      <s-section heading="Welcome to Tile Calculator! 🚀">
+    <s-page heading="Setup & Configuration Guide">
+      <s-section heading="You're all set! 🚀">
         <s-paragraph>
-          Congratulations! You’ve successfully installed the <b>Tile Calculator</b>. To get your calculator live and running on your product pages, just follow these simple steps below.
+          Great news! You’ve successfully installed the <b>Tile Calculator</b>. We’ve made it super easy to get your calculator up and running on your product pages. Just follow these simple steps, and you’ll be ready in no time!
         </s-paragraph>
       </s-section>
 
-      <s-section heading="Step 1: Adding the App Block to Your Product Page">
+      <s-section heading="Step 1: Adding the Calculator to Your Shop">
         <s-paragraph>
-          We use the "App Block" system to display the calculator. This is a non-destructive method that doesn't mess with your theme code.
+          We use a "magic" system called <b>App Blocks</b>. It’s like a LEGO piece—you can snap it into your store without breaking any of your theme's code, and you can move it whenever you like!
         </s-paragraph>
         <s-unordered-list>
-          <s-list-item>Go to <b>Online Store &gt; Themes</b> and click <b>Customize</b>.</s-list-item>
-          <s-list-item>Select <b>Products &gt; Default Product</b> from the top menu.</s-list-item>
-          <s-list-item>On the left sidebar, click <b>Add Block</b> under Product Information.</s-list-item>
-          <s-list-item>Select <b>Tile Calculator</b> and drag it to your preferred location.</s-list-item>
+          <s-list-item>Open your Shopify Admin and go to <b>Online Store &gt; Themes</b>.</s-list-item>
+          <s-list-item>Click the <b>Customize</b> button for your current theme.</s-list-item>
+          <s-list-item>At the very top of the screen, select <b>Products &gt; Default Product</b>.</s-list-item>
+          <s-list-item>On the left side, look for <b>Product Information</b> and click <b>Add Block</b>.</s-list-item>
+          <s-list-item>Click the <b>Apps</b> tab, find <b>Tile Calculator</b>, and click it.</s-list-item>
+          <s-list-item>Now, just drag that block to where you want it (most people put it right under the price!).</s-list-item>
         </s-unordered-list>
       </s-section>
 
-      <s-section heading="Step 2: Configuring Filters and Units">
+      <s-section heading="Step 2: Choosing Where it Shows Up">
         <s-paragraph>
-          Customize how the calculator behaves within the block settings:
+          You might not need a calculator for everything! You can pick and choose which products get it:
         </s-paragraph>
         <s-unordered-list>
-          <s-list-item><b>Product Types:</b> Enter specific types (e.g., "Tiles") to limit visibility.</s-list-item>
-          <s-list-item><b>Measurement System:</b> Choose between <b>Imperial (in/ft)</b> or <b>Metric (cm/m)</b>.</s-list-item>
+          <s-list-item><b>Product Types:</b> Only want it for "Tiles" or "Flooring"? Just type those names in, separated by commas.</s-list-item>
+          <s-list-item><b>Skip Certain Items:</b> You can hide the calculator for things like "samples" or "shipping fees" by adding those words to the <b>Exclude</b> list.</s-list-item>
+          <s-list-item><b>Choose Your Units:</b> Switch between <b>Metric (cm/m)</b> or <b>Imperial (in/ft)</b> depending on what your customers prefer.</s-list-item>
         </s-unordered-list>
       </s-section>
 
-      <s-section heading="Step 3: Connecting Your Data (Metafields)">
+      <s-section heading="Step 3: Connecting Your Product Info (Metafields)">
         <s-paragraph>
-          <b>⚠️ Important Note:</b> When creating your metafields in <i>Settings &gt; Custom Data</i>, you must set the type to <b>"Decimal"</b>. This ensures high precision for calculations.
+          To give your customers the perfect answer, the calculator needs to know how much area each box or piece covers.
+        </s-paragraph>
+        <s-paragraph>
+          <b>🌟 Super Important:</b> When you set up your info in <i>Settings &gt; Custom Data</i>, make sure you choose <b>"Decimal" (Number)</b> as the type. This helps the calculator do its math perfectly! If you choose "Text," the calculator won't be able to "read" the numbers correctly.
         </s-paragraph>
         <s-unordered-list>
-          <s-list-item><b>Box Coverage:</b> Enter your metafield path (e.g., <code>custom.box_coverage</code>).</s-list-item>
-          <s-list-item><b>Piece Coverage:</b> Enter your piece path if applicable (e.g., <code>custom.piece_coverage</code>).</s-list-item>
+          <s-list-item><b>Box Coverage:</b> Put your special code here (like <code>custom.box_coverage</code>).</s-list-item>
+          <s-list-item><b>Piece Coverage:</b> If you sell by the piece, add that code too (like <code>custom.piece_coverage</code>).</s-list-item>
         </s-unordered-list>
       </s-section>
 
-      <s-section slot="aside" heading="Support">
+      <s-section heading="Step 4: Making it Match Your Style">
         <s-paragraph>
-          Need help? Our 24-year software expertise at <b>Serkasoft</b> is here for you.
+          Let's make it look like a part of your family!
+        </s-paragraph>
+        <s-unordered-list>
+          <s-list-item><b>Speak Their Language:</b> You can change labels like "Width" or "Total" to any language you want.</s-list-item>
+          <s-list-item><b>Play with Colors:</b> Pick the perfect colors for your buttons and text to match your store's vibe.</s-list-item>
+        </s-unordered-list>
+      </s-section>
+
+      <s-section slot="aside" heading="Need a Helping Hand?">
+        <s-paragraph>
+          Don't worry if you get stuck! Our team at <b>Serkasoft</b> has 24 years of experience building software, and we're here to help you shine.
         </s-paragraph>
         <s-link href="/app/additional">
-          <s-button>Contact Support</s-button>
+          <s-button>Get Professional Support</s-button>
         </s-link>
       </s-section>
     </s-page>
