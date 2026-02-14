@@ -32,7 +32,7 @@ export default function AdditionalPage() {
           Whether you need a unique pricing logic, a custom API integration, or a fully tailored private app to automate your workflow, our 24 years of software expertise is at your service.
         </s-paragraph>
         <s-link href="mailto:support@serkasoft.com?subject=Custom Shopify Project Request">
-          <s-button variant="primary">Discuss Your Project</s-button>
+          <s-button variant="primary">Request Custom Solution</s-button>
         </s-link>
       </s-section>
 
