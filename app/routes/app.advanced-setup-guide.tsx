@@ -67,7 +67,7 @@ export default function AdvancedSetupGuide() {
           With over 24 years in the software industry, we build tools that are reliable and efficient.
         </s-paragraph>
         <s-paragraph>
-          Need a custom pricing logic or a private feature? Our team is ready to help.
+          Need custom feature development or complex integrations? Our professional team is just an email away.
         </s-paragraph>
         <s-link href="mailto:support@serkasoft.com">
           <s-button variant="primary">Contact Support</s-button>
