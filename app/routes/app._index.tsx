@@ -50,7 +50,7 @@ export default function Index() {
           For the calculator to provide accurate results, it needs to know how much area each box or piece covers.
         </s-paragraph>
         <s-paragraph>
-          <b>⚠️ Important Note:</b> When creating your metafields in <i>Settings > Custom Data</i>, you must set the type to <b>"Decimal"</b>. This ensures high precision for calculations and full compatibility with the math engine. Using a "Single line text" format may lead to inconsistent results.
+          <b>⚠️ Important Note:</b> When creating your metafields in <i>Settings > Custom Data</i>, you must set the type to <b>"Decimal"</b>. This ensures high precision for calculations and full compatibility with the math engine.
         </s-paragraph>
         <s-unordered-list>
           <s-list-item><b>Box Coverage:</b> Enter your metafield path (e.g., <code>custom.box_coverage</code>).</s-list-item>
@@ -73,12 +73,6 @@ export default function Index() {
           If you hit a snag or need a custom technical adjustment, our team is here to help.
         </s-paragraph>
         <s-button url="/app/additional">Go to Support & Contact</s-button>
-      </s-section>
-
-      <s-section slot="aside" heading="Pro Tip">
-        <s-paragraph>
-          Always test your calculation logic on a "Preview" theme before publishing to ensure everything looks perfect for your customers.
-        </s-paragraph>
       </s-section>
     </s-page>
   );
