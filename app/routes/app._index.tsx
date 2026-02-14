@@ -38,9 +38,9 @@ export default function Index() {
 
   return (
     <s-page heading="Overview">
-      <s-section heading="About Smart Area Tile Calculator 📐">
+      <s-section heading="About Smart Area & Tile Calculator 📐">
         <s-paragraph>
-          <b>Smart Area Tile Calculator</b> is a customizable web-based calculator designed for tile and flooring websites. It enables users to calculate total area, box coverage, and required box quantities using both imperial and metric units, with support for feet, inches, meters, and mixed measurements. Built for accuracy, speed, and seamless integration into modern e-commerce product pages.
+          Smart Area & Tile Calculator is a customizable web-based calculator designed for tile and flooring websites. It enables users to calculate total area, box coverage, and required box quantities using both imperial and metric units, with support for feet, inches, meters, and mixed measurements. Built for accuracy, speed, and seamless integration into modern e-commerce product pages.
         </s-paragraph>
       </s-section>
 
@@ -61,13 +61,10 @@ export default function Index() {
         </s-unordered-list>
       </s-section>
 
-      <s-section heading="Test with Sample Data">
+      <s-section heading="Optimized Sales Flow">
         <s-paragraph>
-          Want to see the calculator in action immediately? Create a sample tile product to test your theme integration and logic.
+          Smart Area & Tile Calculator is engineered to turn visitors into buyers. By eliminating manual math and providing instant, error-free results, it builds immediate trust. It is designed to minimize customer hesitation and streamline the path to checkout, ensuring your customers order exactly what they need with total confidence.
         </s-paragraph>
-        <s-button onClick={() => fetcher.submit({}, { method: "POST" })}>
-          Generate Sample Product
-        </s-button>
       </s-section>
 
       <s-section slot="aside" heading="Serkasoft Expertise">
