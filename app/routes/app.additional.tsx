@@ -24,11 +24,16 @@ export default function AdditionalPage() {
         </s-unordered-list>
       </s-section>
 
-      <s-section heading="Custom Calculations">
+      <s-section heading="Custom Shopify Solutions">
         <s-paragraph>
-          Do you have specific tile sizes or complex area calculations? We can build custom logic specifically for your store's theme.
+          Beyond the Tile Calculator, <b>Serkasoft</b> specializes in building high-performance, custom Shopify applications and bespoke theme integrations. 
         </s-paragraph>
-        <s-button url="mailto:support@serkasoft.com">Request Custom Feature</s-button>
+        <s-paragraph>
+          Whether you need a unique pricing logic, a custom API integration, or a fully tailored private app to automate your workflow, our 24 years of software expertise is at your service.
+        </s-paragraph>
+        <s-link href="mailto:support@serkasoft.com?subject=Custom Shopify Project Request">
+          <s-button variant="primary">Discuss Your Project</s-button>
+        </s-link>
       </s-section>
 
       <s-section slot="aside" heading="Quick Links">
