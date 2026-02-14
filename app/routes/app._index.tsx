@@ -1,249 +1,84 @@
 import { useEffect } from "react";
-import type {
-  ActionFunctionArgs,
-  HeadersFunction,
-  LoaderFunctionArgs,
-} from "react-router";
-import { useFetcher } from "react-router";
+import type { HeadersFunction, LoaderFunctionArgs } from "react-router";
 import { useAppBridge } from "@shopify/app-bridge-react";
 import { authenticate } from "../shopify.server";
 import { boundary } from "@shopify/shopify-app-react-router/server";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   await authenticate.admin(request);
-
   return null;
 };
 
-export const action = async ({ request }: ActionFunctionArgs) => {
-  const { admin } = await authenticate.admin(request);
-  const color = ["Red", "Orange", "Yellow", "Green"][
-    Math.floor(Math.random() * 4)
-  ];
-  const response = await admin.graphql(
-    `#graphql
-      mutation populateProduct($product: ProductCreateInput!) {
-        productCreate(product: $product) {
-          product {
-            id
-            title
-            handle
-            status
-            variants(first: 10) {
-              edges {
-                node {
-                  id
-                  price
-                  barcode
-                  createdAt
-                }
-              }
-            }
-          }
-        }
-      }`,
-    {
-      variables: {
-        product: {
-          title: `${color} Snowboard`,
-        },
-      },
-    },
-  );
-  const responseJson = await response.json();
-
-  const product = responseJson.data!.productCreate!.product!;
-  const variantId = product.variants.edges[0]!.node!.id!;
-
-  const variantResponse = await admin.graphql(
-    `#graphql
-    mutation shopifyReactRouterTemplateUpdateVariant($productId: ID!, $variants: [ProductVariantsBulkInput!]!) {
-      productVariantsBulkUpdate(productId: $productId, variants: $variants) {
-        productVariants {
-          id
-          price
-          barcode
-          createdAt
-        }
-      }
-    }`,
-    {
-      variables: {
-        productId: product.id,
-        variants: [{ id: variantId, price: "100.00" }],
-      },
-    },
-  );
-
-  const variantResponseJson = await variantResponse.json();
-
-  return {
-    product: responseJson!.data!.productCreate!.product,
-    variant:
-      variantResponseJson!.data!.productVariantsBulkUpdate!.productVariants,
-  };
-};
-
 export default function Index() {
-  const fetcher = useFetcher<typeof action>();
-
   const shopify = useAppBridge();
-  const isLoading =
-    ["loading", "submitting"].includes(fetcher.state) &&
-    fetcher.formMethod === "POST";
-
-  useEffect(() => {
-    if (fetcher.data?.product?.id) {
-      shopify.toast.show("Product created");
-    }
-  }, [fetcher.data?.product?.id, shopify]);
-
-  const generateProduct = () => fetcher.submit({}, { method: "POST" });
 
   return (
-    <s-page heading="Smart Area & Tile Calculator">
-      <s-button slot="primary-action" onClick={generateProduct}>
-        Generate a product
-      </s-button>
-
-      <s-section heading="Congrats on creating a new Shopify app -111222 🎉">
+    <s-page heading="User Guide & Configuration">
+      <s-section heading="Welcome to Tile Calculator! 🚀">
         <s-paragraph>
-          This embedded app template uses{" "}
-          <s-link
-            href="https://shopify.dev/docs/apps/tools/app-bridge"
-            target="_blank"
-          >
-            App Bridge
-          </s-link>{" "}
-          interface examples like an{" "}
-          <s-link href="/app/additional">additional page in the app nav</s-link>
-          , as well as an{" "}
-          <s-link
-            href="https://shopify.dev/docs/api/admin-graphql"
-            target="_blank"
-          >
-            Admin GraphQL
-          </s-link>{" "}
-          mutation demo, to provide a starting point for app development.
-        </s-paragraph>
-      </s-section>
-      <s-section heading="Get started with products">
-        <s-paragraph>
-          Generate a product with GraphQL and get the JSON output for that
-          product. Learn more about the{" "}
-          <s-link
-            href="https://shopify.dev/docs/api/admin-graphql/latest/mutations/productCreate"
-            target="_blank"
-          >
-            productCreate
-          </s-link>{" "}
-          mutation in our API references.
-        </s-paragraph>
-        <s-stack direction="inline" gap="base">
-          <s-button
-            onClick={generateProduct}
-            {...(isLoading ? { loading: true } : {})}
-          >
-            Generate a product
-          </s-button>
-          {fetcher.data?.product && (
-            <s-button
-              onClick={() => {
-                shopify.intents.invoke?.("edit:shopify/Product", {
-                  value: fetcher.data?.product?.id,
-                });
-              }}
-              target="_blank"
-              variant="tertiary"
-            >
-              Edit product
-            </s-button>
-          )}
-        </s-stack>
-        {fetcher.data?.product && (
-          <s-section heading="productCreate mutation">
-            <s-stack direction="block" gap="base">
-              <s-box
-                padding="base"
-                borderWidth="base"
-                borderRadius="base"
-                background="subdued"
-              >
-                <pre style={{ margin: 0 }}>
-                  <code>{JSON.stringify(fetcher.data.product, null, 2)}</code>
-                </pre>
-              </s-box>
-
-              <s-heading>productVariantsBulkUpdate mutation</s-heading>
-              <s-box
-                padding="base"
-                borderWidth="base"
-                borderRadius="base"
-                background="subdued"
-              >
-                <pre style={{ margin: 0 }}>
-                  <code>{JSON.stringify(fetcher.data.variant, null, 2)}</code>
-                </pre>
-              </s-box>
-            </s-stack>
-          </s-section>
-        )}
-      </s-section>
-
-      <s-section slot="aside" heading="App template specs">
-        <s-paragraph>
-          <s-text>Framework: </s-text>
-          <s-link href="https://reactrouter.com/" target="_blank">
-            React Router
-          </s-link>
-        </s-paragraph>
-        <s-paragraph>
-          <s-text>Interface: </s-text>
-          <s-link
-            href="https://shopify.dev/docs/api/app-home/using-polaris-components"
-            target="_blank"
-          >
-            Polaris web components
-          </s-link>
-        </s-paragraph>
-        <s-paragraph>
-          <s-text>API: </s-text>
-          <s-link
-            href="https://shopify.dev/docs/api/admin-graphql"
-            target="_blank"
-          >
-            GraphQL
-          </s-link>
-        </s-paragraph>
-        <s-paragraph>
-          <s-text>Database: </s-text>
-          <s-link href="https://www.prisma.io/" target="_blank">
-            Prisma
-          </s-link>
+          Congratulations! You’ve successfully installed the <b>Tile Calculator</b>. To get your calculator live and running on your product pages, just follow these simple steps below.
         </s-paragraph>
       </s-section>
 
-      <s-section slot="aside" heading="Next steps">
+      <s-section heading="Step 1: Adding the App Block to Your Product Page">
+        <s-paragraph>
+          We use the "App Block" system to display the calculator. This is a non-destructive method that doesn't mess with your theme code and allows you to move the calculator anywhere you like.
+        </s-paragraph>
         <s-unordered-list>
-          <s-list-item>
-            Build an{" "}
-            <s-link
-              href="https://shopify.dev/docs/apps/getting-started/build-app-example"
-              target="_blank"
-            >
-              example app
-            </s-link>
-          </s-list-item>
-          <s-list-item>
-            Explore Shopify&apos;s API with{" "}
-            <s-link
-              href="https://shopify.dev/docs/apps/tools/graphiql-admin-api"
-              target="_blank"
-            >
-              GraphiQL
-            </s-link>
-          </s-list-item>
+          <s-list-item>Go to <b>Online Store > Themes</b> in your Shopify Admin.</s-list-item>
+          <s-list-item>Click the <b>Customize</b> button next to your active theme.</s-list-item>
+          <s-list-item>Select <b>Products > Default Product</b> from the top dropdown menu.</s-list-item>
+          <s-list-item>On the left sidebar, under <b>Product Information</b>, click <b>Add Block</b>.</s-list-item>
+          <s-list-item>Switch to the <b>Apps</b> tab and select <b>Tile Calculator</b>.</s-list-item>
+          <s-list-item>Drag and drop the block to your preferred location (usually right below the price).</s-list-item>
         </s-unordered-list>
+      </s-section>
+
+      <s-section heading="Step 2: Configuring Filters and Units">
+        <s-paragraph>
+          You might not want the calculator on every single product. You can customize visibility within the block settings:
+        </s-paragraph>
+        <s-unordered-list>
+          <s-list-item><b>Product Types:</b> Enter specific types (e.g., "Tiles", "Hardwood") separated by commas to limit visibility.</s-list-item>
+          <s-list-item><b>Exclude Terms:</b> Hide the calculator if the product title contains specific words like "sample" or "trim".</s-list-item>
+          <s-list-item><b>Measurement System:</b> Choose between <b>Imperial (in/ft)</b> or <b>Metric (cm/m)</b> based on your region.</s-list-item>
+        </s-unordered-list>
+      </s-section>
+
+      <s-section heading="Step 3: Connecting Your Data (Metafields)">
+        <s-paragraph>
+          For the calculator to provide accurate results, it needs to know how much area each box or piece covers.
+        </s-paragraph>
+        <s-paragraph>
+          <b>⚠️ Important Note:</b> When creating your metafields in <i>Settings > Custom Data</i>, you must set the type to <b>"Decimal"</b>. This ensures high precision for calculations and full compatibility with the math engine. Using a "Single line text" format may lead to inconsistent results.
+        </s-paragraph>
+        <s-unordered-list>
+          <s-list-item><b>Box Coverage:</b> Enter your metafield path (e.g., <code>custom.box_coverage</code>).</s-list-item>
+          <s-list-item><b>Piece Coverage:</b> If applicable, enter the path for single pieces (e.g., <code>custom.piece_coverage</code>).</s-list-item>
+        </s-unordered-list>
+      </s-section>
+
+      <s-section heading="Step 4: Design and Localization">
+        <s-paragraph>
+          Make the calculator look like it was built specifically for your brand:
+        </s-paragraph>
+        <s-unordered-list>
+          <s-list-item><b>Translations:</b> Translate labels like "Width", "Length", and "Estimated Total" into your store's language.</s-list-item>
+          <s-list-item><b>Visuals:</b> Match button colors, text styles, and spacing with your theme’s existing design palette.</s-list-item>
+        </s-unordered-list>
+      </s-section>
+
+      <s-section slot="aside" heading="Need Assistance?">
+        <s-paragraph>
+          If you hit a snag or need a custom technical adjustment, our team is here to help.
+        </s-paragraph>
+        <s-button url="/app/additional">Go to Support & Contact</s-button>
+      </s-section>
+
+      <s-section slot="aside" heading="Pro Tip">
+        <s-paragraph>
+          Always test your calculation logic on a "Preview" theme before publishing to ensure everything looks perfect for your customers.
+        </s-paragraph>
       </s-section>
     </s-page>
   );
