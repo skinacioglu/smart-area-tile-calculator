@@ -37,37 +37,55 @@ export default function Index() {
   }, [fetcher.data?.product?.id, shopify]);
 
   return (
-    <s-page heading="Dashboard">
-      <s-section heading="Quick Start Guide 🚀">
+    <s-page heading="Overview">
+      <s-section heading="What is Tile Calculator? 📐">
         <s-paragraph>
-          Welcome! Follow these 3 quick steps to get your <b>Tile Calculator</b> live on your product pages.
-        </s-paragraph>
-        <s-unordered-list>
-          <s-list-item><b>Enable:</b> Go to Theme Customize &gt; Default Product &gt; Add Block &gt; Tile Calculator.</s-list-item>
-          <s-list-item><b>Connect:</b> Set your <b>Box</b> and <b>Piece</b> coverage Metafields as <b>Decimal</b> type.</s-list-item>
-          <s-list-item><b>Launch:</b> Drag the block to your preferred position and save changes.</s-list-item>
-        </s-unordered-list>
-        <s-paragraph>
-          Need more details? Check our <s-link href="/app/advanced-setup-guide">Advanced Setup Guide</s-link>.
+          The <b>Tile Calculator</b> is a high-performance tool designed for stores selling tiles, flooring, or any box-based products. It simplifies the buying process by allowing customers to calculate exactly how many boxes they need based on their area measurements, directly on your product page.
         </s-paragraph>
       </s-section>
 
-      <s-section heading="Test Your Setup">
+      <s-section heading="Quick Setup Guide 🚀">
         <s-paragraph>
-          Create a sample product to see how the calculator handles new entries.
+          Get your calculator running in minutes by following these three core steps:
+        </s-paragraph>
+        <s-unordered-list>
+          <s-list-item>
+            <b>1. Enable App Block:</b> Go to <i>Theme Customize &gt; Default Product</i>. Add the "Tile Calculator" block and position it under your price or description.
+          </s-list-item>
+          <s-list-item>
+            <b>2. Map Your Data:</b> Connect your <b>Box</b> and <b>Piece</b> coverage values using Shopify Metafields. Ensure they are set to <b>Decimal</b> type for accurate math.
+          </s-list-item>
+          <s-list-item>
+            <b>3. Configure Visibility:</b> Use the block settings to filter which products show the calculator based on Product Type or specific keywords.
+          </s-list-item>
+        </s-unordered-list>
+      </s-section>
+
+      <s-section heading="Test with Sample Data">
+        <s-paragraph>
+          Want to see the calculator in action immediately? Create a sample tile product to test your theme integration and logic.
         </s-paragraph>
         <s-button onClick={() => fetcher.submit({}, { method: "POST" })}>
           Generate Sample Product
         </s-button>
       </s-section>
 
-      <s-section slot="aside" heading="Serkasoft Support">
+      <s-section slot="aside" heading="Serkasoft Expertise">
         <s-paragraph>
-          With 24 years of expertise, we're here to help with custom features or technical setup.
+          With over 24 years in the software industry, we build tools that are reliable and efficient.
         </s-paragraph>
-        <s-link href="/app/additional">
-          <s-button variant="primary">Get Support</s-button>
+        <s-paragraph>
+          Need custom feature development or complex integrations? Our professional team is just an email away.
+        </s-paragraph>
+        <s-link href="mailto:support@serkasoft.com">
+          <s-button variant="primary">Contact Support</s-button>
         </s-link>
+      </s-section>
+
+      <s-section slot="aside" heading="Pro Tip">
+        <s-paragraph>
+          Always preview your changes in a draft theme before publishing to ensure the design perfectly matches your store&apos;s brand.
+        </s-paragraph>
       </s-section>
 
       <s-section slot="aside" heading="Quick Links">
