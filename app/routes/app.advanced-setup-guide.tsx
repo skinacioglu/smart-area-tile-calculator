@@ -18,7 +18,7 @@ export default function AdvancedSetupGuide() {
 
       <s-section heading="Step 1: Adding the App Block">
         <s-paragraph>
-          Our calculator uses Shopify&apos;s modern <b>App Block</b> system. This allows you to integrate the tool without modifying your theme&apos;s liquid files, ensuring your site remains fast and update-friendly.
+          Our calculator uses Shopify's modern App Block system. The biggest advantage? It works like a "virtual layer." It does not modify or overwrite your theme's liquid files, ensuring your site's core code remains 100% clean and untouched.
         </s-paragraph>
         <s-unordered-list>
           <s-list-item>Go to <b>Online Store &gt; Themes</b> and click <b>Customize</b>.</s-list-item>
