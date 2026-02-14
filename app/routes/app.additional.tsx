@@ -38,10 +38,10 @@ export default function AdditionalPage() {
 
       <s-section slot="aside" heading="Serkasoft Expertise">
         <s-paragraph>
-          With over 24 years in the software industry, we specialize in building tools that just work.
+          With over 24 years in the software industry, we build tools that are reliable and efficient.
         </s-paragraph>
         <s-paragraph>
-          Need custom feature development or complex integrations? Our professional team is just an email away.
+          Need a custom pricing logic or a private feature? Our team is ready to help.
         </s-paragraph>
         <s-link href="mailto:support@serkasoft.com">
           <s-button variant="primary">Contact Support</s-button>

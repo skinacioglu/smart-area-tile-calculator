@@ -76,17 +76,17 @@ export default function AdvancedSetupGuide() {
 
       <s-section slot="aside" heading="Pro Tip">
         <s-paragraph>
-          Always use a "Draft" theme to test your Metafield connections before going live to ensure perfect accuracy.
+          Always preview your changes in a draft theme before publishing to ensure the design perfectly matches your store's brand.
         </s-paragraph>
       </s-section>
 
-      <s-section slot="aside" heading="Navigation">
+      <s-section slot="aside" heading="Quick Links">
         <s-unordered-list>
           <s-list-item>
             <s-link href="/app">Back to Dashboard</s-link>
           </s-list-item>
           <s-list-item>
-            <s-link href="/app/additional">Support & Contact</s-link>
+            <s-link href="https://help.shopify.com" target="_blank">Shopify Help Center</s-link>
           </s-list-item>
         </s-unordered-list>
       </s-section>
