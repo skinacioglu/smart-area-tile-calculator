@@ -109,13 +109,36 @@ export default function Index() {
         </s-unordered-list>
       </s-section>
 
-      <s-section slot="aside" heading="Need a Helping Hand?">
+      <s-section slot="aside" heading="Serkasoft Expertise">
         <s-paragraph>
-          Don't worry if you get stuck! Our team at <b>Serkasoft</b> has 24 years of experience building software, and we're here to help you shine.
+          With over 24 years in the software industry, we specialize in building tools that just work.
         </s-paragraph>
-        <s-link href="/app/additional">
-          <s-button>Get Professional Support</s-button>
+        <s-paragraph>
+          Need custom feature development or complex integrations? Our professional team is just an email away.
+        </s-paragraph>
+        <s-link href="mailto:support@serkasoft.com">
+          <s-button variant="primary">Contact Support</s-button>
         </s-link>
+      </s-section>
+
+      <s-section slot="aside" heading="Pro Tip">
+        <s-paragraph>
+          Always preview your changes in a draft theme before publishing to ensure the design perfectly matches your store&apos;s brand.
+        </s-paragraph>
+      </s-section>
+
+      <s-section slot="aside" heading="Quick Links">
+        <s-unordered-list>
+          <s-list-item>
+            <s-link href="/app/advanced-setup-guide">Advanced Setup Guide</s-link>
+          </s-list-item>
+          <s-list-item>
+            <s-link href="/app">Back to User Guide</s-link>
+          </s-list-item>
+          <s-list-item>
+            <s-link href="https://help.shopify.com" target="_blank">Shopify Help Center</s-link>
+          </s-list-item>
+        </s-unordered-list>
       </s-section>
     </s-page>
   );
