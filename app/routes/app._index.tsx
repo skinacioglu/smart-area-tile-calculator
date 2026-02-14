@@ -81,7 +81,7 @@ export default function Index() {
         </s-paragraph>
         <s-unordered-list>
           <s-list-item><b>Product Types:</b> Only want it for "Tiles" or "Flooring"? Just type those names in, separated by commas.</s-list-item>
-          <s-list-item><b>Skip Certain Items:</b> You can hide the calculator for things like "samples" or "shipping fees" by adding those words to the <b>Exclude</b> list.</s-list-item>
+          <s-list-item><b>Skip Certain Items:</b> You can hide the calculator for things like "samples" or "molding" by adding those words to the <b>Exclude</b> list.</s-list-item>
           <s-list-item><b>Choose Your Units:</b> Switch between <b>Metric (cm/m)</b> or <b>Imperial (in/ft)</b> depending on what your customers prefer.</s-list-item>
         </s-unordered-list>
       </s-section>
@@ -95,7 +95,7 @@ export default function Index() {
         </s-paragraph>
         <s-unordered-list>
           <s-list-item><b>Box Coverage:</b> Put your special code here (like <code>custom.box_coverage</code>).</s-list-item>
-          <s-list-item><b>Piece Coverage:</b> If you sell by the piece, add that code too (like <code>custom.piece_coverage</code>).</s-list-item>
+          <s-list-item><b>Piece Coverage:</b> Both box and piece coverage values are required for the calculation. Enter your special code for a single piece area here (like <code>custom.piece_coverage</code>).</s-list-item>
         </s-unordered-list>
       </s-section>
 
