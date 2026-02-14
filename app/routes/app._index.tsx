@@ -64,10 +64,10 @@ export default function Index() {
           We use the "App Block" system to display the calculator. This is a non-destructive method that doesn't mess with your theme code.
         </s-paragraph>
         <s-unordered-list>
-          <s-list-item>Go to <b>Online Store > Themes</b> and click <b>Customize</b>.</s-list-item>
-          <s-list-item>Select <b>Products > Default Product</b> from the top menu.</List.Item>
-          <s-list-item>On the left sidebar, click <b>Add Block</b> under Product Information.</List.Item>
-          <s-list-item>Select <b>Tile Calculator</b> and drag it to your preferred location.</List.Item>
+          <s-list-item>Go to <b>Online Store &gt; Themes</b> and click <b>Customize</b>.</s-list-item>
+          <s-list-item>Select <b>Products &gt; Default Product</b> from the top menu.</s-list-item>
+          <s-list-item>On the left sidebar, click <b>Add Block</b> under Product Information.</s-list-item>
+          <s-list-item>Select <b>Tile Calculator</b> and drag it to your preferred location.</s-list-item>
         </s-unordered-list>
       </s-section>
 
@@ -83,21 +83,11 @@ export default function Index() {
 
       <s-section heading="Step 3: Connecting Your Data (Metafields)">
         <s-paragraph>
-          <b>⚠️ Important Note:</b> When creating your metafields in <i>Settings > Custom Data</i>, you must set the type to <b>"Decimal"</b>. This ensures high precision for calculations.
+          <b>⚠️ Important Note:</b> When creating your metafields in <i>Settings &gt; Custom Data</i>, you must set the type to <b>"Decimal"</b>. This ensures high precision for calculations.
         </s-paragraph>
         <s-unordered-list>
           <s-list-item><b>Box Coverage:</b> Enter your metafield path (e.g., <code>custom.box_coverage</code>).</s-list-item>
           <s-list-item><b>Piece Coverage:</b> Enter your piece path if applicable (e.g., <code>custom.piece_coverage</code>).</s-list-item>
-        </s-unordered-list>
-      </s-section>
-
-      <s-section heading="Step 4: Design and Localization">
-        <s-paragraph>
-          Match the calculator with your brand's look and feel:
-        </s-paragraph>
-        <s-unordered-list>
-          <s-list-item><b>Translations:</b> Update labels like "Width" and "Length" in your store's language.</s-list-item>
-          <s-list-item><b>Colors:</b> Adjust button and text colors to match your theme palette.</s-list-item>
         </s-unordered-list>
       </s-section>
 
@@ -108,12 +98,6 @@ export default function Index() {
         <s-link href="/app/additional">
           <s-button>Contact Support</s-button>
         </s-link>
-      </s-section>
-
-      <s-section slot="aside" heading="Pro Tip">
-        <s-paragraph>
-          Always test your settings in a "Draft" or "Preview" theme before going live.
-        </s-paragraph>
       </s-section>
     </s-page>
   );
