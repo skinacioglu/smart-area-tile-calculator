@@ -39,6 +39,9 @@ export default function AdditionalPage() {
       <s-section slot="aside" heading="Quick Links">
         <s-unordered-list>
           <s-list-item>
+            <s-link href="/app">Advanced Setup Guide</s-link>
+          </s-list-item>
+          <s-list-item>
             <s-link href="/app">Back to User Guide</s-link>
           </s-list-item>
           <s-list-item>
