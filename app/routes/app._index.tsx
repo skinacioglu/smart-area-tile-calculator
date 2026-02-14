@@ -38,9 +38,9 @@ export default function Index() {
 
   return (
     <s-page heading="Overview">
-      <s-section heading="What is Tile Calculator? 📐">
+      <s-section heading="About Smart Area Tile Calculator 📐">
         <s-paragraph>
-          The <b>Tile Calculator</b> is a high-performance tool designed for stores selling tiles, flooring, or any box-based products. It simplifies the buying process by allowing customers to calculate exactly how many boxes they need based on their area measurements, directly on your product page.
+          <b>Smart Area Tile Calculator</b> is a customizable web-based calculator designed for tile and flooring websites. It enables users to calculate total area, box coverage, and required box quantities using both imperial and metric units, with support for feet, inches, meters, and mixed measurements. Built for accuracy, speed, and seamless integration into modern e-commerce product pages.
         </s-paragraph>
       </s-section>
 
