@@ -3,7 +3,7 @@ export default function AdditionalPage() {
     <s-page heading="Support & Contact">
       <s-section heading="How can we help you?">
         <s-paragraph>
-          Need help with the <b>Tile Calculator</b>? Our team at <b>Serkasoft</b> is here to ensure your shop runs perfectly. Whether it's a technical issue or a custom feature request, feel free to reach out.
+          Need help with the Tile Calculator? Our team at Serkasoft is here to ensure your shop runs perfectly. Whether it's a technical issue or a custom feature request, feel free to reach out.
         </s-paragraph>
       </s-section>
 
@@ -26,7 +26,7 @@ export default function AdditionalPage() {
 
       <s-section heading="Custom Shopify Solutions">
         <s-paragraph>
-          Beyond the Tile Calculator, <b>Serkasoft</b> specializes in building high-performance, custom Shopify applications and bespoke theme integrations. 
+          Beyond the Tile Calculator, Serkasoft specializes in building high-performance, custom Shopify applications and bespoke theme integrations. 
         </s-paragraph>
         <s-paragraph>
           Whether you need a unique pricing logic, a custom API integration, or a fully tailored private app to automate your workflow, our 24 years of software expertise is at your service.
