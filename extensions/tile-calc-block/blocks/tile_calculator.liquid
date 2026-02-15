@@ -34,8 +34,31 @@
   
   <style>
     /* Global Overrides */
-    quantity-input, .quantity, .product-form__input--quantity, input[name="quantity"], .product-form__quantity {
+    quantity-input, 
+    .quantity, 
+    .product-form__input--quantity,
+    .product-form__item--quantity,
+    input[name="quantity"]:not(#st_hidden_qty) {
       display: none !important;
+      opacity: 0 !important;
+      visibility: hidden !important;
+      position: absolute !important;
+      z-index: -10 !important;
+    }
+
+    .template-cart quantity-input, 
+    .template-cart .quantity,
+    .template-cart input[name="quantity"],
+    .template-cart .cart-item__remove,
+    .cart-drawer quantity-input {
+      display: flex !important;
+      opacity: 1 !important;
+      visibility: visible !important;
+      position: relative !important;
+      z-index: 1 !important;
+      pointer-events: auto !important;
+      height: auto !important;
+      width: auto !important;
     }
 
     .st-calc-final-wrap { 
@@ -137,9 +160,26 @@
 
   <script>
     (function() {
+      // Scoped variables for fetch/jQuery interception
+      let quantityOverride = 0;
+      const OriginalFetch = window.fetch;
+      
       function initST() {
         const wrap = document.getElementById('st_calc_wrapper');
         if(!wrap) return;
+        
+        // ========================================
+        // 1. HTML INJECTION: Hidden Source of Truth
+        // ========================================
+        let stRealQty = wrap.querySelector('#st_real_quantity');
+        if (!stRealQty) {
+          stRealQty = document.createElement('input');
+          stRealQty.type = 'hidden';
+          stRealQty.id = 'st_real_quantity';
+          stRealQty.name = 'quantity';
+          stRealQty.value = '1';
+          wrap.appendChild(stRealQty);
+        }
 
         const areaIn = wrap.querySelector('#st_input_area_final');
         const boxIn = wrap.querySelector('#st_input_box_final');
@@ -181,6 +221,12 @@
 
         function updateUI(boxes) {
           if (boxes > 0) {
+            // Store in scoped variable for fetch/jQuery interception
+            quantityOverride = boxes;
+            
+            // Update hidden source of truth
+            stRealQty.value = boxes;
+            
             // 1. Update Estimated Price
             const livePriceWrap = wrap.querySelector('#st_live_price');
             if (livePriceWrap) {
@@ -188,20 +234,21 @@
             }
             wrap.querySelector('#st_price_wrap').style.display = "block";
             
-            // 2. Sync with Theme Quantity Inputs (Fallback if CSS hide fails)
-            const themeInputs = document.querySelectorAll('input[name="quantity"], input[id*="Quantity"], quantity-input input');
-            
+            // 2. Sync with Theme Quantity Inputs
+            const themeInputs = document.querySelectorAll('input[name="quantity"], input[id*="Quantity"]');
             themeInputs.forEach(input => {
-              if (input.id !== 'st_hidden_qty') {
-                 input.value = boxes;
-                 
-                 // Trigger events so theme scripts (Dawn, etc.) recognize the change
-                 ['input', 'change', 'blur'].forEach(eventType => {
-                   input.dispatchEvent(new Event(eventType, { bubbles: true }));
-                 });
+              if (input.id !== 'st_real_quantity') {
+                input.value = boxes;
+                
+                // Dispatch all events with bubbles: true for framework detection
+                ['input', 'change', 'blur'].forEach(eventType => {
+                  input.dispatchEvent(new Event(eventType, { bubbles: true }));
+                });
               }
             });
           } else {
+            quantityOverride = 0;
+            stRealQty.value = 1;
             const priceWrap = wrap.querySelector('#st_price_wrap');
             if (priceWrap) priceWrap.style.display = "none";
           }
@@ -290,6 +337,70 @@
           }
         };
       }
+      
+      // ========================================
+      // 2. FETCH INTERCEPTION (Modern Themes)
+      // ========================================
+      window.fetch = function(...args) {
+        let [resource, config] = args;
+        const resourceStr = typeof resource === 'string' ? resource : (resource.url || '');
+        
+        // Intercept /cart/add requests and force calculated quantity
+        if (resourceStr.includes('/cart/add') && quantityOverride > 0) {
+          try {
+            if (config && config.body) {
+              // Try parsing as JSON
+              try {
+                let body = JSON.parse(config.body);
+                if (body.items && Array.isArray(body.items)) {
+                  body.items.forEach(item => {
+                    item.quantity = quantityOverride;
+                  });
+                } else if (body.quantity !== undefined) {
+                  body.quantity = quantityOverride;
+                }
+                config.body = JSON.stringify(body);
+              } catch (e) {
+                // Try FormData
+                if (config.body instanceof FormData) {
+                  config.body.set('quantity', quantityOverride);
+                }
+                // Try URLSearchParams string
+                else if (typeof config.body === 'string') {
+                  config.body = config.body.replace(/(quantity=)[^&]*/g, '$1' + quantityOverride);
+                }
+              }
+            }
+          } catch (e) {
+            // Silently fail, allow original request
+          }
+        }
+        
+        return OriginalFetch.apply(this, args);
+      };
+      
+      // ========================================
+      // 3. JQUERY INTERCEPTION (Legacy Themes)
+      // ========================================
+      if (window.jQuery) {
+        window.jQuery(document).on('ajaxSend', function(event, xhr, settings) {
+          // Intercept /cart/add requests
+          if (settings.url && settings.url.includes('/cart/add') && quantityOverride > 0) {
+            try {
+              if (typeof settings.data === 'string') {
+                // Handle query string format
+                settings.data = settings.data.replace(/(quantity=)[^&]*/g, '$1' + quantityOverride);
+              } else if (typeof settings.data === 'object') {
+                // Handle object format
+                settings.data.quantity = quantityOverride;
+              }
+            } catch (e) {
+              // Silently fail
+            }
+          }
+        });
+      }
+      
       initST();
       document.addEventListener('shopify:section:load', initST);
     })();
@@ -474,3 +585,4 @@
   ]
 }
 {% endschema %}
+
