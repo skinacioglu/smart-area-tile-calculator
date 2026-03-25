@@ -3,6 +3,7 @@ import {
   ApiVersion,
   AppDistribution,
   shopifyApp,
+  BillingInterval,
 } from "@shopify/shopify-app-react-router/server";
 import { PrismaSessionStorage } from "@shopify/shopify-app-session-storage-prisma";
 import prisma from "./db.server";
@@ -22,6 +23,18 @@ const shopify = shopifyApp({
   ...(process.env.SHOP_CUSTOM_DOMAIN
     ? { customShopDomains: [process.env.SHOP_CUSTOM_DOMAIN] }
     : {}),
+  billing: {
+    "professional-monthly": {
+      // İŞTE EKSİK OLAN VE SİSTEMİ BOZAN KISIM BURASIYDI (lineItems)
+      lineItems: [ 
+        {
+          amount: 19.95,
+          currencyCode: "USD",
+          interval: BillingInterval.Every30Days,
+        },
+      ],
+    },
+  },
 });
 
 export default shopify;
@@ -31,4 +44,5 @@ export const authenticate = shopify.authenticate;
 export const unauthenticated = shopify.unauthenticated;
 export const login = shopify.login;
 export const registerWebhooks = shopify.registerWebhooks;
-export const sessionStorage = shopify.sessionStorage;
+// Doğrudan değişkeni export ediyoruz:
+export const sessionStorage = new PrismaSessionStorage(prisma);
