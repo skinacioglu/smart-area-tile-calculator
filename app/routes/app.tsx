@@ -6,8 +6,21 @@ import { AppProvider } from "@shopify/shopify-app-react-router/react";
 import { authenticate } from "../shopify.server";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
-  await authenticate.admin(request);
+  // 1. authenticate içinden session, billing ve redirect'i çekiyoruz
+  const { session, billing, redirect } = await authenticate.admin(request);
 
+  // 2. Fatura var mı diye sadece "okuma" yapıyoruz (fatura oluşturmuyoruz)
+  const { hasActivePayment } = await billing.check();
+
+  // 3. Fatura yoksa, senin bulduğun dinamik linki üretip oraya fırlatıyoruz
+  if (!hasActivePayment) {
+    const storeHandle = session.shop.replace('.myshopify.com', '');
+    const pricingUrl = `https://admin.shopify.com/store/${storeHandle}/charges/smart-area-tile-calculator/pricing_plans`;
+    
+    return redirect(pricingUrl, { target: "_top" });
+  }
+
+  // Fatura varsa içeri al
   // eslint-disable-next-line no-undef
   return { apiKey: process.env.SHOPIFY_API_KEY || "" };
 };
