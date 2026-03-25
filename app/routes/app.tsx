@@ -12,10 +12,10 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   // 2. EKLENEN: Uygulamaya girişte ödemeyi zorunlu kılan blok
   await billing.require({
     plans: ["professional-monthly"], // DİKKAT: shopify.server.ts dosyanızdaki plan adıyla BİREBİR aynı olmalı
-    isTest: true, // Yayına alırken bunu kesinlikle false yapın
+    isTest: false, // Yayına alırken bunu kesinlikle false yapın
     onFailure: async () => billing.request({
       plan: "professional-monthly",
-      isTest: true, // Yayına alırken bunu kesinlikle false yapın
+      isTest: false, // Yayına alırken bunu kesinlikle false yapın
     }),
   });
 
