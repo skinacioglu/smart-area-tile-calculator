@@ -6,18 +6,7 @@ import { AppProvider } from "@shopify/shopify-app-react-router/react";
 import { authenticate } from "../shopify.server";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
-  // 1. DEĞİŞİKLİK: authenticate'den 'billing' nesnesini çıkardık
-  const { billing } = await authenticate.admin(request);
-
-  // 2. EKLENEN: Uygulamaya girişte ödemeyi zorunlu kılan blok
-  await billing.require({
-    plans: ["professional-monthly"], // DİKKAT: shopify.server.ts dosyanızdaki plan adıyla BİREBİR aynı olmalı
-    isTest: false, // Yayına alırken bunu kesinlikle false yapın
-    onFailure: async () => billing.request({
-      plan: "professional-monthly",
-      isTest: false, // Yayına alırken bunu kesinlikle false yapın
-    }),
-  });
+  await authenticate.admin(request);
 
   // eslint-disable-next-line no-undef
   return { apiKey: process.env.SHOPIFY_API_KEY || "" };
