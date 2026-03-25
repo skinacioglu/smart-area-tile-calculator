@@ -6,18 +6,7 @@ import { AppProvider } from "@shopify/shopify-app-react-router/react";
 import { authenticate } from "../shopify.server";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
-  // Billing objesini aldık
-  const { billing } = await authenticate.admin(request);
-
-  // Kullanıcı uygulamaya girdiğinde ödeme kontrolü yapar
-  await billing.require({
-    plans: ["professional-monthly"],
-    isTest: false, // Geliştirme/test aşamasında para çekmemesi için true
-    onFailure: async () => billing.request({ 
-      plan: "professional-monthly",
-      isTest: false 
-    }),
-  });
+  await authenticate.admin(request);
 
   // eslint-disable-next-line no-undef
   return { apiKey: process.env.SHOPIFY_API_KEY || "" };
