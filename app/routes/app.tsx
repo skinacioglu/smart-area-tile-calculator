@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import type { HeadersFunction, LoaderFunctionArgs } from "react-router";
 import { Outlet, useLoaderData, useRouteError } from "react-router";
 import { boundary } from "@shopify/shopify-app-react-router/server";
@@ -28,18 +27,19 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 export default function App() {
   const { apiKey, redirectTo } = useLoaderData<typeof loader>();
 
-  useEffect(() => {
-    if (redirectTo) {
-      // iframe'den çıkıp üst pencereyi yönlendir
-      window.top!.location.href = redirectTo;
-    }
-  }, [redirectTo]);
-
+  // React beklemeden anında çalışır
   if (redirectTo) {
     return (
-      <div style={{ padding: "2rem", textAlign: "center" }}>
-        <p>Redirecting to pricing...</p>
-      </div>
+      <html>
+        <head>
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `window.top.location.href = ${JSON.stringify(redirectTo)};`,
+            }}
+          />
+        </head>
+        <body />
+      </html>
     );
   }
 
