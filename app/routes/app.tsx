@@ -17,7 +17,8 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     const storeHandle = session.shop.replace('.myshopify.com', '');
     const pricingUrl = `https://admin.shopify.com/store/${storeHandle}/charges/smart-area-tile-calculator/pricing_plans`;
     
-    throw redirect(pricingUrl);
+    // DOĞRU KULLANIM: Hem iframe'i kırmak için _top, hem de 200'ü gizlemek için throw
+    throw redirect(pricingUrl, { target: "_top" });
   }
 
   // Fatura varsa içeri al
