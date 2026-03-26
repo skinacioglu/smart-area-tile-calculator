@@ -12,11 +12,14 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   const { hasActivePayment } = await billing.check();
 
   if (!hasActivePayment) {
-    const storeHandle = session.shop.replace(".myshopify.com", "");
-    const pricingUrl = `https://admin.shopify.com/store/${storeHandle}/charges/smart-area-tile-calculator/pricing_plans`;
+  const billingResponse = await billing.request({
+    plan: "professional-monthly",
+    isTest: true,
+  });
 
-    // 200 döndür, yönlendirmeyi tarayıcıya bırak
-    return { redirectTo: pricingUrl, apiKey: "" };
+  const confirmationUrl = (billingResponse as { confirmationUrl: string }).confirmationUrl;
+
+  return { redirectTo: confirmationUrl, apiKey: "" };
   }
 
   return {
